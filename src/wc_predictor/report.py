@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -48,4 +51,3 @@ def plot_winner_probabilities(path: str | Path, winner_probabilities: pd.DataFra
     plt.tight_layout()
     plt.savefig(path, dpi=160)
     plt.close()
-

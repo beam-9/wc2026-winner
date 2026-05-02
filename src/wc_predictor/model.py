@@ -53,7 +53,7 @@ def train_model(features: pd.DataFrame, cutoff_year: int = 2022, model_type: str
         estimator = Pipeline(
             [
                 ("scale", StandardScaler()),
-                ("model", LogisticRegression(max_iter=1000, multi_class="auto")),
+                ("model", LogisticRegression(max_iter=1000)),
             ]
         )
     else:

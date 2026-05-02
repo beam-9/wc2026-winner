@@ -1,0 +1,50 @@
+group,team,confederation,is_host
+A,Mexico,CONCACAF,true
+A,South Africa,CAF,false
+A,Korea Republic,AFC,false
+A,Czechia,UEFA,false
+B,Canada,CONCACAF,true
+B,Bosnia and Herzegovina,UEFA,false
+B,Qatar,AFC,false
+B,Switzerland,UEFA,false
+C,Brazil,CONMEBOL,false
+C,Morocco,CAF,false
+C,Haiti,CONCACAF,false
+C,Scotland,UEFA,false
+D,USA,CONCACAF,true
+D,Paraguay,CONMEBOL,false
+D,Australia,AFC,false
+D,Turkey,UEFA,false
+E,Germany,UEFA,false
+E,Curacao,CONCACAF,false
+E,Côte d'Ivoire,CAF,false
+E,Ecuador,CONMEBOL,false
+F,Netherlands,UEFA,false
+F,Japan,AFC,false
+F,Sweden,UEFA,false
+F,Tunisia,CAF,false
+G,Belgium,UEFA,false
+G,Egypt,CAF,false
+G,IR Iran,AFC,false
+G,New Zealand,OFC,false
+H,Spain,UEFA,false
+H,Cabo Verde,CAF,false
+H,Saudi Arabia,AFC,false
+H,Uruguay,CONMEBOL,false
+I,France,UEFA,false
+I,Senegal,CAF,false
+I,Iraq,AFC,false
+I,Norway,UEFA,false
+J,Argentina,CONMEBOL,false
+J,Algeria,CAF,false
+J,Austria,UEFA,false
+J,Jordan,AFC,false
+K,Portugal,UEFA,false
+K,Congo DR,CAF,false
+K,Uzbekistan,AFC,false
+K,Colombia,CONMEBOL,false
+L,England,UEFA,false
+L,Croatia,UEFA,false
+L,Ghana,CAF,false
+L,Panama,CONCACAF,false
+

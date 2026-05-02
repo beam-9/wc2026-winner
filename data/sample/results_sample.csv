@@ -1,0 +1,41 @@
+date,home_team,away_team,home_score,away_score,tournament,city,country,neutral
+2018-06-14,Russia,Saudi Arabia,5,0,FIFA World Cup,Moscow,Russia,false
+2018-06-15,Egypt,Uruguay,0,1,FIFA World Cup,Yekaterinburg,Russia,true
+2018-06-15,Morocco,IR Iran,0,1,FIFA World Cup,Saint Petersburg,Russia,true
+2018-06-15,Portugal,Spain,3,3,FIFA World Cup,Sochi,Russia,true
+2018-06-16,France,Australia,2,1,FIFA World Cup,Kazan,Russia,true
+2018-06-16,Argentina,Iceland,1,1,FIFA World Cup,Moscow,Russia,true
+2018-06-17,Germany,Mexico,0,1,FIFA World Cup,Moscow,Russia,true
+2018-06-18,Belgium,Panama,3,0,FIFA World Cup,Sochi,Russia,true
+2018-06-18,Tunisia,England,1,2,FIFA World Cup,Volgograd,Russia,true
+2018-06-19,Colombia,Japan,1,2,FIFA World Cup,Saransk,Russia,true
+2019-06-05,Brazil,Qatar,2,0,Friendly,Brasilia,Brazil,false
+2019-06-09,USA,Venezuela,0,3,Friendly,Cincinnati,USA,false
+2019-10-10,Netherlands,Northern Ireland,3,1,UEFA Euro qualification,Rotterdam,Netherlands,false
+2019-10-11,Czechia,England,2,1,UEFA Euro qualification,Prague,Czechia,false
+2019-11-14,Turkey,Iceland,0,0,UEFA Euro qualification,Istanbul,Turkey,false
+2020-10-08,Scotland,Israel,0,0,UEFA Euro qualification,Glasgow,Scotland,false
+2020-11-11,Belgium,Switzerland,2,1,Friendly,Leuven,Belgium,false
+2020-11-17,Croatia,Portugal,2,3,UEFA Nations League,Split,Croatia,false
+2021-06-13,England,Croatia,1,0,UEFA Euro,London,England,false
+2021-06-14,Spain,Sweden,0,0,UEFA Euro,Seville,Spain,false
+2021-06-15,Hungary,Portugal,0,3,UEFA Euro,Budapest,Hungary,false
+2021-06-15,France,Germany,1,0,UEFA Euro,Munich,Germany,false
+2022-11-20,Qatar,Ecuador,0,2,FIFA World Cup,Al Khor,Qatar,false
+2022-11-21,England,IR Iran,6,2,FIFA World Cup,Al Rayyan,Qatar,true
+2022-11-22,Argentina,Saudi Arabia,1,2,FIFA World Cup,Lusail,Qatar,true
+2022-11-23,Germany,Japan,1,2,FIFA World Cup,Al Rayyan,Qatar,true
+2022-11-24,Uruguay,Korea Republic,0,0,FIFA World Cup,Al Rayyan,Qatar,true
+2022-11-24,Portugal,Ghana,3,2,FIFA World Cup,Doha,Qatar,true
+2022-11-26,France,Denmark,2,1,FIFA World Cup,Doha,Qatar,true
+2022-11-27,Belgium,Morocco,0,2,FIFA World Cup,Doha,Qatar,true
+2022-11-28,Brazil,Switzerland,1,0,FIFA World Cup,Doha,Qatar,true
+2022-12-02,Serbia,Switzerland,2,3,FIFA World Cup,Doha,Qatar,true
+2023-06-15,Argentina,Australia,2,0,Friendly,Beijing,China,true
+2023-09-09,Germany,Japan,1,4,Friendly,Wolfsburg,Germany,false
+2023-10-12,Spain,Scotland,2,0,UEFA Euro qualification,Seville,Spain,false
+2023-10-13,Netherlands,France,1,2,UEFA Euro qualification,Amsterdam,Netherlands,false
+2024-06-14,Germany,Scotland,5,1,UEFA Euro,Munich,Germany,false
+2024-06-15,Spain,Croatia,3,0,UEFA Euro,Berlin,Germany,true
+2024-06-16,Serbia,England,0,1,UEFA Euro,Gelsenkirchen,Germany,true
+2024-06-17,Austria,France,0,1,UEFA Euro,Dusseldorf,Germany,true

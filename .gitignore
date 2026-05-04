@@ -8,3 +8,4 @@ data/raw/*.csv
 data/processed/*.csv
 reports/figures/*.png
 reports/summary.md
+reports/model_comparison.md

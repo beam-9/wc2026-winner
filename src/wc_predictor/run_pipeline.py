@@ -8,7 +8,7 @@ import joblib
 from wc_predictor.data import load_groups, load_results
 from wc_predictor.features import build_match_features, latest_team_state
 from wc_predictor.model import FEATURE_COLUMNS, train_model
-from wc_predictor.report import plot_winner_probabilities, write_summary
+from wc_predictor.report import plot_winner_probabilities, write_model_comparison, write_summary
 from wc_predictor.simulate import simulate_tournament
 
 
@@ -19,7 +19,7 @@ def main() -> None:
     parser.add_argument("--simulations", type=int, default=10000, help="Number of Monte Carlo simulations.")
     parser.add_argument("--cutoff-year", type=int, default=2022, help="First year to hold out for testing.")
     parser.add_argument("--max-date", default=None, help="Latest historical match date to include, e.g. 2026-05-04.")
-    parser.add_argument("--model-type", choices=["gb", "logistic"], default="gb", help="Model type.")
+    parser.add_argument("--model-type", choices=["gb", "logistic"], default="logistic", help="Model type.")
     args = parser.parse_args()
 
     Path("data/processed").mkdir(parents=True, exist_ok=True)
@@ -35,6 +35,8 @@ def main() -> None:
 
     groups = load_groups(args.groups)
     states = latest_team_state(features)
+    team_strength = groups[["team", "group", "confederation", "is_host"]].merge(states, on="team", how="left")
+    team_strength.to_csv("data/processed/team_strength.csv", index=False)
     round_probabilities, winner_probabilities = simulate_tournament(
         groups=groups,
         states=states,
@@ -46,7 +48,8 @@ def main() -> None:
     winner_probabilities.to_csv("data/processed/winner_probabilities.csv", index=False)
 
     plot_winner_probabilities("reports/figures/winner_probabilities.png", winner_probabilities)
-    write_summary("reports/summary.md", winner_probabilities, evaluation, args.simulations)
+    write_summary("reports/summary.md", winner_probabilities, evaluation, args.simulations, args.model_type, args.max_date)
+    write_model_comparison("reports/model_comparison.md", team_strength, winner_probabilities)
 
     print("Pipeline complete.")
     print(f"Accuracy: {evaluation.accuracy:.3f}")

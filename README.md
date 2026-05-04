@@ -6,6 +6,7 @@ Portfolio-ready data science project for predicting the FIFA World Cup 2026 winn
 
 - A reproducible data pipeline for international football match results.
 - Rolling team-strength features with no future-data leakage.
+- Elo ratings and opponent-adjusted recent form so blowout wins over weak teams do not dominate the model.
 - Baseline and machine-learning match outcome models.
 - A 2026 tournament simulator for group and knockout stages.
 - Report outputs: winner probabilities, advancement probabilities, feature importance, and model evaluation.
@@ -50,7 +51,8 @@ python -m wc_predictor.run_pipeline \
   --results data/raw/results.csv \
   --groups data/manual/groups_2026.csv \
   --simulations 10000 \
-  --max-date 2026-05-04
+  --max-date 2026-05-04 \
+  --model-type logistic
 ```
 
 For a quick smoke test without the full dataset:
@@ -81,9 +83,14 @@ streamlit run app/streamlit_app.py
 
 The model predicts individual match outcomes, then simulates the tournament many times. This is stronger than directly predicting the champion because only a small number of historical World Cups exist.
 
+The default model is a calibrated-friendly logistic classifier using Elo and opponent-adjusted features. A slower gradient-boosted model is available with `--model-type gb`.
+
 Core concepts used:
 
 - Time-aware feature engineering.
+- Elo ratings updated chronologically before each match prediction row.
+- Opponent-adjusted form metrics that reward strong results against elite opponents and discount routine wins against weak teams.
+- Capped goal-difference features to limit distortion from extreme mismatches.
 - Rolling form metrics.
 - Opponent-adjusted strength.
 - Baseline comparison.

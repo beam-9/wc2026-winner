@@ -9,12 +9,21 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def write_summary(path: str | Path, winner_probabilities: pd.DataFrame, evaluation: object, simulations: int) -> None:
+def write_summary(
+    path: str | Path,
+    winner_probabilities: pd.DataFrame,
+    evaluation: object,
+    simulations: int,
+    model_type: str,
+    max_date: str | None,
+) -> None:
     top = winner_probabilities.head(10)
     lines = [
         "# World Cup 2026 Prediction Summary",
         "",
         f"Simulations run: {simulations:,}",
+        f"Model type: {model_type}",
+        f"Historical data cutoff: {max_date or 'none'}",
         "",
         "## Model Evaluation",
         "",
@@ -35,10 +44,33 @@ def write_summary(path: str | Path, winner_probabilities: pd.DataFrame, evaluati
             "## Notes",
             "",
             "- Probabilities are model estimates, not certainties.",
+            "- Current features include Elo strength and opponent-adjusted recent form, so big wins over weak teams are capped and discounted.",
             "- The default knockout simulation reseeds qualified teams and should be replaced with official fixture mapping for final publication.",
             "- Refresh the group/team CSV before publishing if FIFA updates team names, groups, or fixtures.",
         ]
     )
+    Path(path).write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_model_comparison(path: str | Path, team_strength: pd.DataFrame, winner_probabilities: pd.DataFrame) -> None:
+    merged = winner_probabilities.merge(team_strength, on="team", how="left")
+    top = merged.head(15)
+    lines = [
+        "# Model Diagnostics",
+        "",
+        "The upgraded model uses Elo and opponent-adjusted form to reduce over-credit for blowout wins against weak opponents.",
+        "",
+        "## Top Teams With Strength Signals",
+        "",
+        "| Rank | Team | Winner probability | Elo | Adjusted points avg | Adjusted goal diff avg | Performance vs expected |",
+        "|---:|---|---:|---:|---:|---:|---:|",
+    ]
+    for rank, row in enumerate(top.itertuples(index=False), start=1):
+        lines.append(
+            f"| {rank} | {row.team} | {row.winner_probability:.2%} | "
+            f"{row.elo:.0f} | {row.adjusted_points_avg:.2f} | "
+            f"{row.adjusted_goal_diff_avg:.2f} | {row.performance_vs_expected_avg:.2f} |"
+        )
     Path(path).write_text("\n".join(lines), encoding="utf-8")
 
 

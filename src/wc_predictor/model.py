@@ -13,21 +13,33 @@ from sklearn.preprocessing import StandardScaler
 
 FEATURE_COLUMNS = [
     "neutral",
+    "home_elo",
+    "away_elo",
+    "elo_diff",
     "home_points_avg",
     "home_goal_diff_avg",
     "home_goals_for_avg",
     "home_goals_against_avg",
     "home_matches_played",
+    "home_adjusted_points_avg",
+    "home_adjusted_goal_diff_avg",
+    "home_performance_vs_expected_avg",
     "away_points_avg",
     "away_goal_diff_avg",
     "away_goals_for_avg",
     "away_goals_against_avg",
     "away_matches_played",
+    "away_adjusted_points_avg",
+    "away_adjusted_goal_diff_avg",
+    "away_performance_vs_expected_avg",
     "form_points_diff",
     "goal_diff_avg_diff",
     "goals_for_avg_diff",
     "goals_against_avg_diff",
     "matches_played_diff",
+    "adjusted_points_diff",
+    "adjusted_goal_diff_avg_diff",
+    "performance_vs_expected_diff",
 ]
 
 
@@ -38,7 +50,7 @@ class Evaluation:
     brier_home_win: float
 
 
-def train_model(features: pd.DataFrame, cutoff_year: int = 2022, model_type: str = "gb") -> tuple[object, Evaluation]:
+def train_model(features: pd.DataFrame, cutoff_year: int = 2022, model_type: str = "logistic") -> tuple[object, Evaluation]:
     train = features[features["date"].dt.year < cutoff_year]
     test = features[features["date"].dt.year >= cutoff_year]
     if train.empty or test.empty:

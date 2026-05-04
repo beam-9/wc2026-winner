@@ -57,8 +57,10 @@ display_cols = [
     "points_avg",
     "goal_diff_avg",
 ]
+display_table = leaderboard[display_cols].copy()
+display_table.insert(0, "rank", range(1, len(display_table) + 1))
 st.dataframe(
-    leaderboard[display_cols].style.format(
+    display_table.style.hide(axis="index").format(
         {
             "winner_probability": "{:.2%}",
             "elo": "{:.0f}",

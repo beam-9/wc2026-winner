@@ -18,6 +18,7 @@ def main() -> None:
     parser.add_argument("--groups", default="data/manual/groups_2026.csv", help="World Cup 2026 groups CSV path.")
     parser.add_argument("--simulations", type=int, default=10000, help="Number of Monte Carlo simulations.")
     parser.add_argument("--cutoff-year", type=int, default=2022, help="First year to hold out for testing.")
+    parser.add_argument("--max-date", default=None, help="Latest historical match date to include, e.g. 2026-05-04.")
     parser.add_argument("--model-type", choices=["gb", "logistic"], default="gb", help="Model type.")
     args = parser.parse_args()
 
@@ -25,7 +26,7 @@ def main() -> None:
     Path("reports/figures").mkdir(parents=True, exist_ok=True)
     Path("models").mkdir(parents=True, exist_ok=True)
 
-    results = load_results(args.results)
+    results = load_results(args.results, max_date=args.max_date)
     features = build_match_features(results)
     features.to_csv("data/processed/match_features.csv", index=False)
 
@@ -56,4 +57,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

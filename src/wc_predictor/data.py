@@ -14,7 +14,7 @@ REQUIRED_RESULTS_COLUMNS = {
 }
 
 
-def load_results(path: str | Path) -> pd.DataFrame:
+def load_results(path: str | Path, max_date: str | None = None) -> pd.DataFrame:
     """Load and normalize the historical international results dataset."""
     df = pd.read_csv(path)
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
@@ -39,6 +39,9 @@ def load_results(path: str | Path) -> pd.DataFrame:
     if "tournament" not in df.columns:
         df["tournament"] = "Unknown"
 
+    if max_date is not None:
+        df = df[df["date"] <= pd.Timestamp(max_date)]
+
     return df.sort_values("date").reset_index(drop=True)
 
 
@@ -50,4 +53,3 @@ def load_groups(path: str | Path) -> pd.DataFrame:
         raise ValueError(f"Missing required group columns: {sorted(missing)}")
     groups["is_host"] = groups["is_host"].astype(bool)
     return groups
-

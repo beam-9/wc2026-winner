@@ -21,10 +21,11 @@ def simulate_tournament(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     rng = np.random.default_rng(random_seed)
     round_counts: dict[str, Counter[str]] = {round_name: Counter() for round_name in ROUND_NAMES}
+    probability_cache = _build_probability_cache(groups, states, model, feature_columns)
 
     for _ in range(simulations):
-        qualified = _simulate_group_stage(groups, states, model, feature_columns, rng, round_counts)
-        champion = _simulate_knockouts(qualified, states, model, feature_columns, rng, round_counts)
+        qualified = _simulate_group_stage(groups, probability_cache, rng, round_counts)
+        champion = _simulate_knockouts(qualified, probability_cache, rng, round_counts)
         round_counts["winner"][champion] += 1
 
     round_rows = []
@@ -42,9 +43,7 @@ def simulate_tournament(
 
 def _simulate_group_stage(
     groups: pd.DataFrame,
-    states: pd.DataFrame,
-    model: object,
-    feature_columns: list[str],
+    probability_cache: dict[tuple[str, str], np.ndarray],
     rng: np.random.Generator,
     round_counts: dict[str, Counter[str]],
 ) -> list[str]:
@@ -56,7 +55,7 @@ def _simulate_group_stage(
         table = {team: {"team": team, "group": group_name, "points": 0, "gd": 0, "gf": 0} for team in teams}
         for i, home in enumerate(teams):
             for away in teams[i + 1 :]:
-                home_goals, away_goals = _simulate_score(home, away, states, model, feature_columns, rng)
+                home_goals, away_goals = _simulate_score(home, away, probability_cache, rng)
                 _update_table(table[home], table[away], home_goals, away_goals)
 
         ranked = sorted(
@@ -82,9 +81,7 @@ def _simulate_group_stage(
 
 def _simulate_knockouts(
     teams: list[str],
-    states: pd.DataFrame,
-    model: object,
-    feature_columns: list[str],
+    probability_cache: dict[tuple[str, str], np.ndarray],
     rng: np.random.Generator,
     round_counts: dict[str, Counter[str]],
 ) -> str:
@@ -95,7 +92,7 @@ def _simulate_knockouts(
     for round_name in rounds:
         winners: list[str] = []
         for i in range(0, len(current), 2):
-            winner = _simulate_knockout_match(current[i], current[i + 1], states, model, feature_columns, rng)
+            winner = _simulate_knockout_match(current[i], current[i + 1], probability_cache, rng)
             winners.append(winner)
         if round_name != "winner":
             for team in winners:
@@ -108,12 +105,10 @@ def _simulate_knockouts(
 def _simulate_score(
     home: str,
     away: str,
-    states: pd.DataFrame,
-    model: object,
-    feature_columns: list[str],
+    probability_cache: dict[tuple[str, str], np.ndarray],
     rng: np.random.Generator,
 ) -> tuple[int, int]:
-    probabilities = _predict_probabilities(home, away, states, model, feature_columns)
+    probabilities = probability_cache[(home, away)]
     outcome = rng.choice([0, 1, 2], p=probabilities)
     if outcome == 0:
         return int(rng.integers(1, 4)), int(rng.integers(0, 2))
@@ -126,14 +121,28 @@ def _simulate_score(
 def _simulate_knockout_match(
     home: str,
     away: str,
+    probability_cache: dict[tuple[str, str], np.ndarray],
+    rng: np.random.Generator,
+) -> str:
+    probabilities = probability_cache[(home, away)]
+    home_advances_probability = probabilities[0] + 0.5 * probabilities[1]
+    return home if rng.random() < home_advances_probability else away
+
+
+def _build_probability_cache(
+    groups: pd.DataFrame,
     states: pd.DataFrame,
     model: object,
     feature_columns: list[str],
-    rng: np.random.Generator,
-) -> str:
-    probabilities = _predict_probabilities(home, away, states, model, feature_columns)
-    home_advances_probability = probabilities[0] + 0.5 * probabilities[1]
-    return home if rng.random() < home_advances_probability else away
+) -> dict[tuple[str, str], np.ndarray]:
+    teams = sorted(groups["team"].unique())
+    cache: dict[tuple[str, str], np.ndarray] = {}
+    for home in teams:
+        for away in teams:
+            if home == away:
+                continue
+            cache[(home, away)] = _predict_probabilities(home, away, states, model, feature_columns)
+    return cache
 
 
 def _predict_probabilities(
@@ -160,4 +169,3 @@ def _update_table(home: dict[str, object], away: dict[str, object], home_goals: 
     else:
         home["points"] += 1
         away["points"] += 1
-

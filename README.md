@@ -49,7 +49,8 @@ After adding `data/raw/results.csv`:
 python -m wc_predictor.run_pipeline \
   --results data/raw/results.csv \
   --groups data/manual/groups_2026.csv \
-  --simulations 10000
+  --simulations 10000 \
+  --max-date 2026-05-04
 ```
 
 For a quick smoke test without the full dataset:
@@ -97,4 +98,4 @@ Core concepts used:
 - Free data usually lacks reliable injuries, expected lineups, and complete player-level quality metrics.
 - Historical international match results include friendlies, qualifiers, and tournaments with different incentives, so tournament context features matter.
 - Standardize team names before final runs. Some datasets use variants such as `United States` versus `USA`, `Turkey` versus `Türkiye`, or `Cape Verde` versus `Cabo Verde`.
-
+- Use `--max-date` to prevent future data leakage if the downloaded results file includes matches after the prediction date.

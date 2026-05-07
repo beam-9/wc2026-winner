@@ -1,16 +1,19 @@
 # World Cup 2026 Winner Predictor
 
-Portfolio-ready data science project for predicting the FIFA World Cup 2026 winner with public data. The project trains match-level models from historical international results, converts match probabilities into tournament outcomes through Monte Carlo simulation, and produces winner/round probabilities plus report-ready charts.
+I built this project to estimate FIFA World Cup 2026 winner probabilities from historical international football results. Instead of trying to directly predict the champion from a small number of past World Cups, I model individual match outcomes, convert those probabilities into tournament simulations, and report each team’s chance of reaching later rounds or winning the tournament.
 
-## What This Project Builds
+The current model uses multinomial logistic regression with engineered team-strength features, including a custom chronological Elo system, opponent-adjusted recent form, capped goal-difference signals, and backtests against previous World Cups.
 
-- A reproducible data pipeline for international football match results.
-- Rolling team-strength features with no future-data leakage.
-- Elo ratings and opponent-adjusted recent form so blowout wins over weak teams do not dominate the model.
-- Baseline and machine-learning match outcome models.
-- A 2026 tournament simulator for group and knockout stages.
-- Report outputs: winner probabilities, advancement probabilities, feature importance, and model evaluation.
-- Optional Streamlit dashboard.
+## What The Project Does
+
+- Loads and cleans historical international match results.
+- Builds leakage-safe pre-match features in chronological order.
+- Updates Elo ratings after each match using opponent strength, match importance, goal difference, and home advantage.
+- Creates opponent-adjusted rolling form features so large wins over weak teams are discounted.
+- Trains a match outcome classifier using logistic regression by default.
+- Simulates the 2026 tournament thousands of times from match probabilities.
+- Produces winner probabilities, round advancement probabilities, model diagnostics, and validation reports.
+- Provides a Streamlit dashboard for exploring predictions, team strength signals, and backtest results.
 
 ## Data Sources
 
@@ -69,8 +72,10 @@ Outputs are written to:
 - `data/processed/match_features.csv`
 - `data/processed/round_probabilities.csv`
 - `data/processed/winner_probabilities.csv`
+- `data/processed/team_strength.csv`
 - `reports/figures/winner_probabilities.png`
 - `reports/summary.md`
+- `reports/model_comparison.md`
 - `models/match_model.joblib`
 
 ## Optional Dashboard
@@ -99,23 +104,20 @@ The dashboard shows a validation section automatically when these files exist.
 
 ## Methodology
 
-The model predicts individual match outcomes, then simulates the tournament many times. This is stronger than directly predicting the champion because only a small number of historical World Cups exist.
+I frame the problem as match-level classification. Each row represents a historical international match, and the target is one of three outcomes: home win, draw, or away win. I then use the trained model to estimate probabilities for possible World Cup 2026 matches and pass those probabilities into a Monte Carlo tournament simulator.
 
-The default model is a calibrated-friendly logistic classifier using Elo and opponent-adjusted features. A slower gradient-boosted model is available with `--model-type gb`.
+The default model is logistic regression because it is fast, interpretable, and works well with the engineered rating/form features. A slower gradient-boosted model is also available with `--model-type gb`, but the logistic model is the main implementation used for the dashboard and validation workflow.
 
-Core concepts used:
+Key components:
 
-- Time-aware feature engineering.
-- Elo ratings updated chronologically before each match prediction row.
-- Opponent-adjusted form metrics that reward strong results against elite opponents and discount routine wins against weak teams.
-- Capped goal-difference features to limit distortion from extreme mismatches.
-- Rolling form metrics.
-- Opponent-adjusted strength.
-- Baseline comparison.
-- Multiclass classification.
-- Probability calibration.
-- Monte Carlo simulation.
-- Backtesting and calibration analysis.
+- **Chronological feature engineering:** features for a match only use information available before that match.
+- **Elo system:** every team starts from the same baseline rating; ratings update after each match based on actual result versus expected result.
+- **Match importance weighting:** World Cup and qualification matches move Elo more than friendlies.
+- **Goal-difference capping:** extreme mismatches are limited so results like 7-0 against weak teams do not dominate the model.
+- **Opponent-adjusted form:** recent points and goal difference are weighted by opponent Elo.
+- **Performance vs expected:** measures whether a team has recently overperformed or underperformed relative to Elo expectations.
+- **Monte Carlo simulation:** repeated tournament simulations turn match probabilities into round and winner probabilities.
+- **Backtesting:** the validation command tests the model on the 2014, 2018, and 2022 World Cups using only pre-tournament data.
 
 ## Known Limitations
 

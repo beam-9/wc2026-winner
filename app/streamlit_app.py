@@ -41,9 +41,26 @@ metric_cols[2].metric("Adjusted goal diff avg", f"{strength_row['adjusted_goal_d
 metric_cols[3].metric("Vs expected avg", f"{strength_row['performance_vs_expected_avg']:.2f}")
 
 st.subheader(f"{team} Round Probabilities")
-st.dataframe(
-    team_row.drop(labels=["team"]).rename("probability").to_frame().style.format("{:.2%}"),
-    use_container_width=True,
+round_probability_table = (
+    team_row.drop(labels=["team"])
+    .rename(
+        {
+            "round_32": "Round of 32",
+            "round_16": "Round of 16",
+            "quarterfinal": "Quarterfinal",
+            "semifinal": "Semifinal",
+            "final": "Final",
+            "winner": "Winner",
+        }
+    )
+    .rename("probability")
+    .reset_index()
+    .rename(columns={"index": "round"})
+)
+round_col, _ = st.columns([1, 2])
+round_col.dataframe(
+    round_probability_table.style.hide(axis="index").format({"probability": "{:.2%}"}),
+    width=360,
 )
 
 st.subheader("Full Table")

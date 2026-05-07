@@ -9,3 +9,4 @@ data/processed/*.csv
 reports/figures/*.png
 reports/summary.md
 reports/model_comparison.md
+reports/validation_report.md

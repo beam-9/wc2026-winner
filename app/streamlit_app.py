@@ -12,6 +12,8 @@ st.title("World Cup 2026 Winner Predictor")
 winner_path = Path("data/processed/winner_probabilities.csv")
 round_path = Path("data/processed/round_probabilities.csv")
 strength_path = Path("data/processed/team_strength.csv")
+validation_metrics_path = Path("data/processed/validation_metrics.csv")
+validation_rankings_path = Path("data/processed/validation_team_rankings.csv")
 
 if not winner_path.exists() or not round_path.exists() or not strength_path.exists():
     st.warning("Run the pipeline first: python -m wc_predictor.run_pipeline --results data/raw/results.csv")
@@ -29,6 +31,18 @@ st.bar_chart(winners.head(top_n).set_index("team")["winner_probability"])
 st.caption(
     "Predictions now include Elo and opponent-adjusted form, so blowout wins over weak opponents are capped and discounted."
 )
+with st.expander("What do these model signals mean?"):
+    st.markdown(
+        """
+        **Elo** is a chronological team-strength rating. Every team starts from the same baseline, gains more from beating strong opponents, and loses more from underperforming against weaker opponents.
+
+        **Adjusted points avg** is recent points form weighted by opponent quality. A draw against an elite team can be more informative than a routine win against a much weaker team.
+
+        **Adjusted goal diff avg** is recent goal difference after capping extreme scorelines and weighting by opponent strength, so results like 7-0 against a weak opponent do not dominate the model.
+
+        **Vs expected avg** compares recent results with what Elo expected before each match. Positive values mean the team has recently overperformed expectations; negative values mean it has underperformed.
+        """
+    )
 
 team = st.selectbox("Inspect team", rounds["team"].sort_values())
 team_row = rounds[rounds["team"] == team].iloc[0]
@@ -90,3 +104,56 @@ st.dataframe(
     ),
     use_container_width=True,
 )
+
+if validation_metrics_path.exists() and validation_rankings_path.exists():
+    st.subheader("Validation Backtests")
+    st.caption(
+        "These checks train only on matches before each historical World Cup, then evaluate that tournament."
+    )
+    validation_metrics = pd.read_csv(validation_metrics_path)
+    validation_rankings = pd.read_csv(validation_rankings_path)
+    metric_display_cols = [
+        "year",
+        "matches",
+        "accuracy",
+        "log_loss",
+        "brier_home_win",
+        "winner_team",
+        "winner_pre_tournament_rank",
+        "runner_up_team",
+        "runner_up_pre_tournament_rank",
+    ]
+    st.dataframe(
+        validation_metrics[metric_display_cols].style.hide(axis="index").format(
+            {
+                "accuracy": "{:.3f}",
+                "log_loss": "{:.3f}",
+                "brier_home_win": "{:.3f}",
+            }
+        ),
+        use_container_width=True,
+    )
+
+    validation_year = st.selectbox("Validation year", validation_metrics["year"].sort_values(), key="validation_year")
+    year_rankings = validation_rankings[validation_rankings["year"] == validation_year].sort_values(
+        "pre_tournament_rank"
+    )
+    st.dataframe(
+        year_rankings.head(10)[
+            [
+                "pre_tournament_rank",
+                "team",
+                "elo",
+                "adjusted_points_avg",
+                "adjusted_goal_diff_avg",
+                "actual_role",
+            ]
+        ].style.hide(axis="index").format(
+            {
+                "elo": "{:.0f}",
+                "adjusted_points_avg": "{:.2f}",
+                "adjusted_goal_diff_avg": "{:.2f}",
+            }
+        ),
+        use_container_width=True,
+    )

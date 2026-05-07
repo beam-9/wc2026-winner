@@ -79,6 +79,24 @@ Outputs are written to:
 streamlit run app/streamlit_app.py
 ```
 
+## Validate The Model
+
+Run historical World Cup backtests:
+
+```bash
+python -m wc_predictor.validate \
+  --results data/raw/results.csv \
+  --years 2014 2018 2022
+```
+
+Validation outputs:
+
+- `data/processed/validation_metrics.csv`
+- `data/processed/validation_team_rankings.csv`
+- `reports/validation_report.md`
+
+The dashboard shows a validation section automatically when these files exist.
+
 ## Methodology
 
 The model predicts individual match outcomes, then simulates the tournament many times. This is stronger than directly predicting the champion because only a small number of historical World Cups exist.

@@ -23,6 +23,11 @@ winners = pd.read_csv(winner_path)
 rounds = pd.read_csv(round_path)
 strength = pd.read_csv(strength_path)
 leaderboard = winners.merge(strength, on="team", how="left")
+validation_metrics = None
+validation_rankings = None
+if validation_metrics_path.exists() and validation_rankings_path.exists():
+    validation_metrics = pd.read_csv(validation_metrics_path)
+    validation_rankings = pd.read_csv(validation_rankings_path)
 
 top_n = st.slider("Teams to show", min_value=5, max_value=30, value=15)
 st.subheader("Winner Probabilities")
@@ -109,7 +114,7 @@ st.dataframe(
     use_container_width=True,
 )
 
-if validation_metrics_path.exists() and validation_rankings_path.exists():
+if validation_metrics is not None and validation_rankings is not None:
     st.subheader("Validation Backtests")
     st.markdown(
         """
@@ -134,8 +139,6 @@ if validation_metrics_path.exists() and validation_rankings_path.exists():
             If winners and finalists are usually near the top, the model has useful tournament-level signal.
             """
         )
-    validation_metrics = pd.read_csv(validation_metrics_path)
-    validation_rankings = pd.read_csv(validation_rankings_path)
     metric_display_cols = [
         "year",
         "matches",
@@ -181,3 +184,40 @@ if validation_metrics_path.exists() and validation_rankings_path.exists():
         ),
         use_container_width=True,
     )
+
+st.subheader("Overall Takeaway")
+top_teams = leaderboard.head(5)
+top_team_parts = [
+    f"{row.team} ({row.winner_probability:.2%})"
+    for row in top_teams[["team", "winner_probability"]].itertuples(index=False)
+]
+top_elo_teams = leaderboard.sort_values("elo", ascending=False).head(3)
+elo_parts = [f"{row.team} ({row.elo:.0f})" for row in top_elo_teams[["team", "elo"]].itertuples(index=False)]
+
+if validation_metrics is not None:
+    validation_parts = [
+        f"{int(row.year)}: {row.winner_team} ranked {int(row.winner_pre_tournament_rank)}"
+        for row in validation_metrics.sort_values("year").itertuples(index=False)
+    ]
+    validation_sentence = (
+        "The validation backtests are encouraging: before the tested World Cups, the eventual winners ranked "
+        + "; ".join(validation_parts)
+        + " by pre-tournament model strength."
+    )
+else:
+    validation_sentence = (
+        "Run the validation command to compare these predictions against previous World Cups and check model reliability."
+    )
+
+st.markdown(
+    f"""
+    Based on the latest simulation run, the model's top five World Cup 2026 candidates are
+    {", ".join(top_team_parts[:-1])}, and {top_team_parts[-1]}. These teams rank highly because the model combines
+    match-level probabilities with team strength indicators such as Elo and opponent-adjusted recent form. The current
+    strongest Elo ratings in the field are {", ".join(elo_parts[:-1])}, and {elo_parts[-1]}.
+
+    {validation_sentence} The probabilities should still be read as estimates rather than certainties. The main
+    remaining limitation is that the knockout-stage path is approximated, so winner probabilities may shift once the
+    exact bracket logic is implemented.
+    """
+)

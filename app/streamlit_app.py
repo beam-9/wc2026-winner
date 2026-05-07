@@ -28,8 +28,12 @@ top_n = st.slider("Teams to show", min_value=5, max_value=30, value=15)
 st.subheader("Winner Probabilities")
 st.bar_chart(winners.head(top_n).set_index("team")["winner_probability"])
 
-st.caption(
-    "Predictions now include Elo and opponent-adjusted form, so blowout wins over weak opponents are capped and discounted."
+st.markdown(
+    """
+    These probabilities come from a match-by-match model. I first estimate how likely each team is to win, draw,
+    or lose a match using historical results, Elo strength, recent form, and opponent quality. The project then
+    simulates the World Cup many times and counts how often each team wins the tournament.
+    """
 )
 with st.expander("What do these model signals mean?"):
     st.markdown(
@@ -107,9 +111,29 @@ st.dataframe(
 
 if validation_metrics_path.exists() and validation_rankings_path.exists():
     st.subheader("Validation Backtests")
-    st.caption(
-        "These checks train only on matches before each historical World Cup, then evaluate that tournament."
+    st.markdown(
+        """
+        Backtests check whether the model would have made reasonable predictions in past World Cups. For each year
+        below, I train using only matches before that tournament started, then test the model on the actual World Cup
+        matches from that year. This helps show whether the model is learning useful patterns rather than just fitting
+        the latest 2026 data.
+        """
     )
+    with st.expander("How to read these validation metrics"):
+        st.markdown(
+            """
+            **Accuracy** is the share of matches where the model's most likely outcome was correct. Higher is better.
+
+            **Log loss** measures how good the full probability forecast was, not just the top prediction. Lower is better.
+            A confident wrong prediction is punished heavily, so this is useful for checking overconfidence.
+
+            **Brier home win** measures how accurate the model's home-team win probability was. Lower is better.
+            It is similar to asking: when the model says a home team has a 60% chance, does that happen about 60% of the time?
+
+            **Winner pre-tournament rank** shows where the eventual champion ranked by model strength before the World Cup started.
+            If winners and finalists are usually near the top, the model has useful tournament-level signal.
+            """
+        )
     validation_metrics = pd.read_csv(validation_metrics_path)
     validation_rankings = pd.read_csv(validation_rankings_path)
     metric_display_cols = [

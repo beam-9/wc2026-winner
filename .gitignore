@@ -6,7 +6,16 @@ __pycache__/
 models/
 data/raw/*.csv
 data/processed/*.csv
+!data/processed/round_probabilities.csv
+!data/processed/team_strength.csv
+!data/processed/validation_metrics.csv
+!data/processed/validation_team_rankings.csv
+!data/processed/winner_probabilities.csv
 reports/figures/*.png
+!reports/figures/winner_probabilities.png
 reports/summary.md
+!reports/summary.md
 reports/model_comparison.md
+!reports/model_comparison.md
 reports/validation_report.md
+!reports/validation_report.md

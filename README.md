@@ -1,5 +1,5 @@
 # World Cup 2026 Winner Predictor
-
+LINK TO DASHBOARD: https://wc2026predict.streamlit.app/
 I built this project to estimate FIFA World Cup 2026 winner probabilities from historical international football results. Instead of trying to directly predict the champion from a small number of past World Cups, I model individual match outcomes, convert those probabilities into tournament simulations, and report each team’s chance of reaching later rounds or winning the tournament.
 
 The current model uses multinomial logistic regression with engineered team-strength features, including a custom chronological Elo system, opponent-adjusted recent form, capped goal-difference signals, and backtests against previous World Cups.
